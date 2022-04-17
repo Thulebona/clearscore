@@ -19,10 +19,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,7 +36,7 @@ public class CreditCardsServiceImpl implements CreditCardsService {
     private final ModelMapper modelMapper;
     private final CSCardsClient csCardsClient;
     private final ScoredCardsClient scoredCardsClient;
-    private final List<CreditCard> creditCards = new ArrayList<>();
+    private final List<CreditCard> creditCards = new CopyOnWriteArrayList<>();
 
     @Override
     public List<CreditCard> getCardRecommendations(CreditCardRequest request) {
@@ -62,12 +65,12 @@ public class CreditCardsServiceImpl implements CreditCardsService {
 
     }
 
-    @SneakyThrows
     private Boolean setCSCardsResponse(Card[] cards) {
-        log.info("before setCSCardsResponse sleep");
-        Thread.sleep(0);
-        log.info("after setCSCardsResponse sleep");
+        if (Objects.isNull(cards)) {
+            return false;
+        }
         var csCards = Stream.of(cards)
+                .filter(Objects::nonNull)
                 .map(card -> new CreditCard()
                         .provider(CardProvider.CS_CARDS.getName())
                         .name(card.getCardName())
@@ -77,12 +80,13 @@ public class CreditCardsServiceImpl implements CreditCardsService {
         return creditCards.addAll(csCards);
     }
 
-    @SneakyThrows
     private Boolean setScoredCardsResponse(com.clearscore.credit.client.scoredcards.model.CreditCard[] cards) {
-        log.info("before setScoredCardsResponse ");
-        Thread.sleep(15);
-        log.info("after setScoredCardsResponse ");
-        var scoredCards = Arrays.stream(cards)
+
+        if (Objects.isNull(cards)) {
+            return false;
+        }
+        var scoredCards=  Arrays.stream(cards)
+                .filter(Objects::nonNull)
                 .map(cc -> new CreditCard()
                         .provider(CardProvider.SCORED_CARDS.getName())
                         .name(cc.getCard())
@@ -96,8 +100,7 @@ public class CreditCardsServiceImpl implements CreditCardsService {
         var formatted = BigDecimal.valueOf(card.getCardScore())
                 .setScale(3, RoundingMode.HALF_EVEN)
                 .doubleValue();
-        card.setCardScore(formatted);
-        return card;
+        return card.cardScore(formatted);
     }
 
     private Void handleErrors(Void unused, Throwable throwable) {

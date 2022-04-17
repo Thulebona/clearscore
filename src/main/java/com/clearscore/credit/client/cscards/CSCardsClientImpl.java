@@ -30,7 +30,6 @@ public class CSCardsClientImpl implements CSCardsClient {
 
     @Async
     @Override
-    @SneakyThrows
     public CompletableFuture<Card[]> getCsCards(CardSearchRequest searchRequest) {
         log.info("enter getCsCards");
         var httpEntity = new HttpEntity<>(searchRequest);
