@@ -26,10 +26,16 @@ public class ScoredCardsClientImpl implements ScoredCardsClient {
     @Value("${client.score.cards.url}")
     private String scoreCardsUrl;
 
+    /**
+     * calls a third part using restTemplate and handles upstream errors
+     *
+     * @param cardsRequest
+     * @return CompletableFuture.completedFuture of Card[] or CompletableFuture.failedFuture with CustomClientException if any error
+     * @throws CustomClientException
+     */
     @Async
     @Override
     public CompletableFuture<CreditCard[]> getScoredCards(ScoredCardsRequest cardsRequest) {
-        log.info("enter getScoredCards");
         var httpEntity = new HttpEntity<>(cardsRequest);
 
         ResponseEntity<CreditCard[]> resp;

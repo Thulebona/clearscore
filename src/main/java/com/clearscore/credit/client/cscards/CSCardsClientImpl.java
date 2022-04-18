@@ -6,7 +6,6 @@ import com.clearscore.credit.client.cscards.model.CardSearchRequest;
 import com.clearscore.credit.enums.CardProvider;
 import com.clearscore.credit.exceptions.CustomClientException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,10 +27,16 @@ public class CSCardsClientImpl implements CSCardsClient {
     @Value("${client.cs.cards.url}")
     private String cardsSearchUrl;
 
+
+    /**
+     * calls a third part using restTemplate and handles upstream errors
+     *
+     * @param searchRequest
+     * @return CompletableFuture.completedFuture of Card[] or CompletableFuture.failedFuture with CustomClientException if any error
+     */
     @Async
     @Override
     public CompletableFuture<Card[]> getCsCards(CardSearchRequest searchRequest) {
-        log.info("enter getCsCards");
         var httpEntity = new HttpEntity<>(searchRequest);
 
         ResponseEntity<Card[]> resp;

@@ -17,6 +17,12 @@ import java.util.List;
 public class CreditCardsController implements CreditcardsApi {
     private final CreditCardsService creditCardsService;
 
+    /**
+     * creditcardsPost invokes CreditCardsService and get the results
+     *
+     * @param request (required)
+     * @return ResponseEntity.ok() with list of CreditCard in json format or ResponseEntity.noContent() if results are empty
+     */
     @Override
     @ApiResponses(@ApiResponse(responseCode = "204", description = "No result were found."))
     public ResponseEntity<List<CreditCard>> creditcardsPost(CreditCardRequest request) {

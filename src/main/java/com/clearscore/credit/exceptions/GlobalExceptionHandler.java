@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * handle any exception thrown by the application and returns customized message
+ * to the user and void return sensitive information
+ */
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
